@@ -1,20 +1,22 @@
 package org.dkpro.similarity.algorithms.vsm.store;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.Reader;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
+import java.util.Random;
 import java.util.stream.IntStream;
 
+import org.apache.commons.compress.compressors.CompressorException;
+import org.apache.commons.compress.compressors.CompressorInputStream;
+import org.apache.commons.compress.compressors.CompressorStreamFactory;
 import org.apache.commons.io.IOUtils;
 import org.dkpro.similarity.algorithms.api.SimilarityException;
 import org.dkpro.similarity.algorithms.vsm.store.vectorindex.VectorIndexContract;
-import org.junit.Ignore;
-import org.netlib.util.doubleW;
 
 import no.uib.cipr.matrix.Vector;
 import no.uib.cipr.matrix.sparse.SparseVector;
@@ -48,10 +50,14 @@ public class EmbeddingVectorReader
 	
 	@Override
 	public Vector getVector(String term) throws SimilarityException {
-		if (!embeddings.containsKey(term))
+		if (!getEmbeddings().containsKey(term))
 		{
 			//ToDo: What happens if the term does not exist in the embedding
-			System.err.printf("Term \"%s\" does not exist in embedding. Missing treatment!%n", term);
+			
+			String[] allKeyInEmbeddings = getEmbeddings().keySet().toArray(new String[getEmbeddings().size()]);
+			String picked = allKeyInEmbeddings[new Random().nextInt(allKeyInEmbeddings.length)];
+			System.err.printf("Term \"%s\" does not exist in embedding.%n Instead there was \"%s\" randomly picked.%n", term, picked);
+			return getVector(picked);
 		}
 		int vSize = getEmbeddings().get(term).length;
 		int[] indices = IntStream.range(0, vSize).toArray();
@@ -84,9 +90,12 @@ public class EmbeddingVectorReader
 			String[] partsOfLine;
 			String term;
 			double[] values;
+			embeddings = new HashMap<String, double[]>();
 			try {
-				//propably here is a GZipInputStream missing
-				in = new BufferedReader(new InputStreamReader(new FileInputStream(embeddingsFile), CONFIG_FILE_ENCODING));
+				FileInputStream fis = new FileInputStream(embeddingsFile);
+			    BufferedInputStream bis = new BufferedInputStream(fis);
+			    CompressorInputStream input = new CompressorStreamFactory().createCompressorInputStream(bis);
+				in = new BufferedReader(new InputStreamReader(input));
 				
 				while((line  = in.readLine()) != null)
 				{
@@ -100,6 +109,8 @@ public class EmbeddingVectorReader
 				}
 			}
 			catch (IOException e) {
+				throw new SimilarityException(e);
+			} catch (CompressorException e) {
 				throw new SimilarityException(e);
 			}
 			finally {

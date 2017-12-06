@@ -90,6 +90,11 @@
         <artifactId>simmetrics</artifactId>
         <version>1.6.2.20070207</version>
       </dependency>
+      <dependency>
+      	<groupId>com.github.mpkorstanje</groupId>
+      	<artifactId>simmetrics-core</artifactId>
+      	<version>4.0.1</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
   <build>
