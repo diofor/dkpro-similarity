@@ -5,21 +5,24 @@ import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.IntStream;
-import java.util.zip.GZIPInputStream;
 
+import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
+import org.apache.commons.compress.archivers.zip.ZipFile;
 import org.apache.commons.compress.compressors.CompressorException;
 import org.apache.commons.compress.compressors.CompressorInputStream;
 import org.apache.commons.compress.compressors.CompressorStreamFactory;
-import org.apache.commons.compress.compressors.gzip.GzipUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.dkpro.similarity.algorithms.api.SimilarityException;
 import org.dkpro.similarity.algorithms.vsm.store.vectorindex.VectorIndexContract;
 
@@ -34,36 +37,34 @@ public class EmbeddingVectorReader
 	extends VectorReader 
 	implements VectorIndexContract 
 {
+	public enum EmbeddingType{
+		GLOVE, Word2Vec, FastText
+	}
+	
+	public enum EmbeddingFormat{
+		bin, txt
+	}
 
 	private static final int MAX_SIZE = 50;
 	private Map<String, double[]> embeddings;
 	private final File embeddingsFile; 
 	private final File filterFile;
-	private String lineSeperatorSequence; //TODO: will be used later
 	private String valueSeperatorSequence;
 	private EmbeddingType embeddingType;
+	private EmbeddingFormat embeddingFormat;
 	private boolean ignoreRelevantWordsList;
 	
-	public enum EmbeddingType{
-		GLOVE, Word2Vec
-	}
 	
-	public EmbeddingVectorReader(File embeddingFile, EmbeddingType typeOfEmbedding, File filterFile) {
+	
+	public EmbeddingVectorReader(File embeddingFile, EmbeddingType typeOfEmbedding, EmbeddingFormat formatOfEmbedding, File filterFile) {
 		this.embeddingsFile = embeddingFile;
+		
 		this.filterFile = filterFile.exists() ?  filterFile : null;
 		ignoreRelevantWordsList = (this.filterFile == null); 
-		switch(typeOfEmbedding)
-		{
-			case GLOVE:		lineSeperatorSequence = "\\n";
-							valueSeperatorSequence = " ";
-							break;
-			case Word2Vec:	lineSeperatorSequence = "\\n";
-							valueSeperatorSequence = " ";
-							//TODO
-							break;	 
-			default: 		//TODO
-		}
 		
+		valueSeperatorSequence = " "; //TODO
+		
+		embeddingFormat = formatOfEmbedding;
 		embeddingType = typeOfEmbedding;
 	}
 	
@@ -100,111 +101,283 @@ public class EmbeddingVectorReader
 		if (embeddings == null)
 		{
 			embeddings = new HashMap<String, double[]>();
-			switch (embeddingType)
-			{
-				case GLOVE: 		loadGlossEmbedding(); break;
-				case Word2Vec:	loadWord2VecEmbedding(); break;
-				default: 		System.err.println("Undefinded Type of Embedding set.") ;break;
-				
+			switch (embeddingFormat) {
+				case bin:	loadBinModel();		break;
+				case txt:	loadTextModel();		break;
+				default: System.err.println("Undefinded Format of Embedding. "); break;
 			}
+			
 			System.out.printf("Size of embedding is %d. (only the loaded part is considered)%n", embeddings.size() );
 		}
 		
 		return embeddings;
 	}
 	
-	private void loadWord2VecEmbedding() throws SimilarityException{
-        
-        boolean linebreaks = false; //TODO
-        int words, vecSize;
-        try (BufferedInputStream bis = new BufferedInputStream(
-                GzipUtils.isCompressedFilename(embeddingsFile.getName())
-                        ? new GZIPInputStream(new FileInputStream(embeddingsFile))
-                        : new FileInputStream(embeddingsFile));
-//        try (BufferedInputStream bis = new BufferedInputStream(
-//        			new CompressorStreamFactory().createCompressorInputStream(
-//        					new FileInputStream(embeddingsFile)));
-                DataInputStream dis = new DataInputStream(bis)) 
-        {
-        		Set<String> relevantWords = loadSetOfRelevantWords();
-            words = Integer.parseInt(readString(dis));
-            vecSize = Integer.parseInt(readString(dis));
-            String word;
-            for (int i = 0; i < words; i++) {
-
-                word = readString(dis);
-                double[] vector = new double[vecSize];
-
-                for (int j = 0; j < vecSize; j++) {
-                    vector[j] = readFloat(dis);
-                }
-                
-                if (relevantWords.contains(word) || ignoreRelevantWordsList)
-                		embeddings.put(word, vector);
-
-
-                if (linebreaks) {
-                    dis.readByte(); // line break
-                }
-            }
-        }
-        catch (IOException e) {
-			throw new SimilarityException(e);
-		} 
-	}
-
-	private void loadGlossEmbedding() throws SimilarityException
+	private void loadTextModel()
 	{
-		String line;
-		String[] partsOfLine;
-		String term;
-		double[] values;
-		try (FileInputStream fis = new FileInputStream(embeddingsFile);
-			    BufferedInputStream bis = new BufferedInputStream(fis);
-			    CompressorInputStream input = new CompressorStreamFactory().createCompressorInputStream(bis);
-				BufferedReader in = new BufferedReader(new InputStreamReader( input ));)
+		switch (embeddingType) {
+		case GLOVE:
+			try {
+				loadTextModelWithoutHeadline();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			break;
+		case Word2Vec:
+		case FastText:
+			try {
+				loadTextModelWithHeadline();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			break;
+		default:
+			System.err.println("Should not be reached. No embeddingType defined in EmbeddingVectorReader");
+			break;
+		}
+	}
+	
+	private void loadBinModel()
+	{
+		//handle the different streams causes by different compressions
+		try(CompressorInputStream in = new CompressorStreamFactory().createCompressorInputStream(
+				new BufferedInputStream(new FileInputStream(embeddingsFile)));
+				DataInputStream din = new DataInputStream(in))
 		{
+			switch (embeddingType) {
+			case GLOVE:
+				System.err.println("No Model known with binary glove format. Not defined in EmbeddingVectorReader");
+				break;
+			case Word2Vec:
+			case FastText:
+				loadBinModelWithHeadline();
+				break;
+			default:
+				System.err.println("Should not be reached. No embeddingType defined in EmbeddingVectorReader");
+				break;
+			}
+			
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (CompressorException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	
+	/*
+	 * Normally this matches Word2Vec and FastText
+	 */
+	//
+	private void loadTextModelWithHeadline() throws IOException
+	{
+		try (BufferedReader reader = getReader())
+		{
+			//read information about #Vectors and #VectorDimensions
+	        String[] firstLine = reader.readLine().split(valueSeperatorSequence);
+	        int words, vecSize;
+	        words = Integer.parseInt(firstLine[0]);
+	        vecSize = Integer.parseInt(firstLine[1]);
+	        
+	        String[] partsOfLine;
+	        double[] vector;
+	        Set<String> relevantWords = loadSetOfRelevantWords();
+	
+	        String line;
+	        String word;
+	        while((line = reader.readLine()) != null)
+	        {
+	        		partsOfLine = line.split(valueSeperatorSequence);
+	            
+	        		word = partsOfLine[0];
+	        		
+//	            if (word.contains("/en/")) word = word.substring(4); //to remove in freebase en the language-marker TODO 
+	            
+	            if (!ignoreRelevantWordsList && !relevantWords.contains(word)) continue; //abort String to Vector transformation if not on the relevantWordsList
+	            
+	            vector = new double[vecSize];
+	
+	            for (int j = 0; j < vecSize; j++) {
+	                vector[j] = Double.parseDouble(partsOfLine[j+1]);
+	            }
+	            
+	            	embeddings.put(word, vector);
+	        }
+		}
+	}
+	
+	
+	/*
+	 * Normally this is Glove
+	 */
+	private void loadTextModelWithoutHeadline() throws IOException
+	{
+		try(BufferedReader reader = getReader()){
+			String[] partsOfLine;
+			double[] vector;
 			Set<String> relevantWords = loadSetOfRelevantWords();
-			while((line  = in.readLine()) != null)
+			
+			String line;
+			String word;
+			while((line  = reader.readLine()) != null)
 			{
 				partsOfLine = line.split(valueSeperatorSequence);
-				term = partsOfLine[0];
-				if (relevantWords.contains(term) || ignoreRelevantWordsList)
+				word = partsOfLine[0];
+				
+				if (relevantWords.contains(word) || ignoreRelevantWordsList)
 				{
-					values = new double[partsOfLine.length-1];
+					vector = new double[partsOfLine.length-1];
 					for (int i = 1; i < partsOfLine.length; i++) {
-						values[i-1] = Double.valueOf(partsOfLine[i]);
+						vector[i-1] = Double.valueOf(partsOfLine[i]);
 					}
-					embeddings.put(term, values);
+					embeddings.put(word, vector);
 				}
 				partsOfLine = null;
 			}
 		}
-		catch (IOException e) {
-			throw new SimilarityException(e);
-		} catch (CompressorException e) {
-			throw new SimilarityException(e);
-		}
 	}
 	
 	
+	/*
+	 * Normally only Word2Vec but also able to read FastText
+	 * 
+	 * Reads byte by byte	
+	 */
+	private void loadBinModelWithHeadline() throws IOException
+	{
+		boolean linebreaks = false; //TODO
+		int words, vecSize;
+		Set<String> relevantWords = loadSetOfRelevantWords();
+		try (DataInputStream dis = getInputStream())
+		{
+	        words = Integer.parseInt(readString(dis));
+	        vecSize = Integer.parseInt(readString(dis));
+	        double[] vector;
+	        String word;
+	        
+	        System.out.println("Reading Embedding...");
+	        short nextStep = 5;
+	        for (long i = 0; i < words; i++) {
+	        		if (((i*100)/words) >= nextStep)
+	        		{
+	        			System.out.print(nextStep  + "% | ");
+	        			nextStep += 5;
+	        		}
+	        		
+	        		vector = new double[vecSize];
+	        		word = readString(dis);
+	            	            
+	//            if (word.contains("/en/")) word = word.substring(4); //to remove in freebase en the language-marker TODO 
+	            int bytesToRead = 4*vecSize;
+	            byte[] bytes = new byte[bytesToRead];
+	            dis.read(bytes);
+	            
+	            if (linebreaks) {
+	                dis.readByte(); // line break
+	            }
+	            
+	            if (!ignoreRelevantWordsList && !relevantWords.contains(word)) continue;  //abort String to Vector transformation if not on the relevantWordsList
+	            
+	            byte[] floatBytes = new byte[4];
+	            for(int j = 0; j < bytesToRead; j = j+4) {
+	            		for (short k = 0 ; k < 4; k++)
+	            		{
+	            			floatBytes[k] = bytes[j+k];
+	            		}
+	            		vector[j/4] = getFloat(floatBytes);
+	            }
+	            
+	            	embeddings.put(word, vector);
+	        }
+		}
+	}	
 	
-    /**
-     * Read a float from a data input stream Credit to:
-     * https://github.com/NLPchina/Word2VEC_java/blob/master/src/com/ansj/vec/Word2VEC.java
-     *
-     * @param is
-     * @return
-     * @throws IOException
-     */
-    private float readFloat(InputStream is)
-        throws IOException
-    {
-        byte[] bytes = new byte[4];
-        is.read(bytes);
-        return getFloat(bytes);
-    }
-
+	private BufferedReader getReader() 
+	{
+		String format = FilenameUtils.getExtension(embeddingsFile.getAbsolutePath());
+		
+		//handle the different streams causes by different compressions		
+		if ("zip".equals(format))
+		{
+			try
+			{
+				ZipFile zf = new ZipFile(embeddingsFile);
+				ArrayList<ZipArchiveEntry> list = Collections.list(zf.getEntries());
+				if (list.size() >= 1) {
+					return new BufferedReader(new InputStreamReader(zf.getInputStream(list.get(0))));
+				} else {
+					try {
+						zf.close();
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		else
+		{
+			try
+			{
+				CompressorInputStream in = new CompressorStreamFactory().createCompressorInputStream(
+						new BufferedInputStream(new FileInputStream(embeddingsFile)));
+				BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+				return reader;
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			} catch (CompressorException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		System.err.println("Returns a unresolved null value.");
+		return null;
+	}
+	
+	private DataInputStream getInputStream()
+	{
+		String format = FilenameUtils.getExtension(embeddingsFile.getAbsolutePath());
+		
+		//handle the different streams causes by different compressions		
+		if ("zip".equals(format))
+		{
+			try {
+				ZipFile zf = new ZipFile(embeddingsFile);
+				ArrayList<ZipArchiveEntry> list = Collections.list(zf.getEntries());
+				if (list.size() >= 1) {
+					return new DataInputStream(zf.getInputStream(list.get(0)));
+				} else {
+					try {
+						zf.close();
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+			}catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		else
+		{
+			try
+			{
+				CompressorInputStream in = new CompressorStreamFactory().createCompressorInputStream(
+						new BufferedInputStream(new FileInputStream(embeddingsFile)));
+				DataInputStream din = new DataInputStream(in);
+				return din;
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			} catch (CompressorException e) {
+				e.printStackTrace();
+			}
+		}
+		return null;
+	}
+	
+    
     /**
      * Read a string from a data input stream Credit to:
      * https://github.com/NLPchina/Word2VEC_java/blob/master/src/com/ansj/vec/Word2VEC.java
@@ -277,7 +450,7 @@ public class EmbeddingVectorReader
 	    	       setOfRelevantWords.add(line.trim());
 	    	    }
 	    	}
-	    	System.out.printf("Size of Set (relevantWords) is %d%n", setOfRelevantWords.size());
+	    	System.out.printf("Number of words to be tested is %d (Size of Filter-Set)%n", setOfRelevantWords.size());
     		return setOfRelevantWords;
     }
 
