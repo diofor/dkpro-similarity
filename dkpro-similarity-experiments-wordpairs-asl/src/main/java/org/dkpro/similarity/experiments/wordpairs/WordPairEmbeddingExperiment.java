@@ -26,8 +26,8 @@ public class WordPairEmbeddingExperiment {
 	public static void main(String[] args) 
 			throws Exception 
 	{
-		sourcePath = "src/main/resources/datasets/wordpairs/en_ANV/";
-		filterFilePath = "src/main/resources/datasets/filterfile.txt";
+		sourcePath = "classpath:/datasets/wordpairs/en/";
+		filterFilePath = "classpath:/datasets/filterfile.txt";
 		
 		createSetPipeline();
 		analysePipeline();
@@ -44,7 +44,8 @@ public class WordPairEmbeddingExperiment {
 		);
 		
 		AnalysisEngineDescription createSet = createEngineDescription(BuildSetAnnotator.class, 
-												BuildSetAnnotator.PARAM_MODEL_LOCATION, filterFilePath);
+				BuildSetAnnotator.PARAM_MODEL_LOCATION, filterFilePath
+		);
 		
 		SimplePipeline.runPipeline(reader, createSet);
 	}
