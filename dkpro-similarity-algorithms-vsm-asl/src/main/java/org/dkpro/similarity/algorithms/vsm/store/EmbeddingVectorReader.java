@@ -53,10 +53,11 @@ public class EmbeddingVectorReader
 	private EmbeddingType embeddingType;
 	private EmbeddingFormat embeddingFormat;
 	private boolean ignoreRelevantWordsList;
+	private String nameOfSelectedFileInContainer;
 	
 	
 	
-	public EmbeddingVectorReader(File embeddingFile, EmbeddingType typeOfEmbedding, EmbeddingFormat formatOfEmbedding, File filterFile) {
+	public EmbeddingVectorReader(File embeddingFile, EmbeddingType typeOfEmbedding, EmbeddingFormat formatOfEmbedding, File filterFile, String nameOfSelectedFileInContainer) {
 		this.embeddingsFile = embeddingFile;
 		
 		this.filterFile = filterFile.exists() ?  filterFile : null;
@@ -66,14 +67,23 @@ public class EmbeddingVectorReader
 		
 		embeddingFormat = formatOfEmbedding;
 		embeddingType = typeOfEmbedding;
+		this.nameOfSelectedFileInContainer = nameOfSelectedFileInContainer;
 	}
 	
 	
 	
 	@Override
 	public Vector getVector(String term) throws SimilarityException {
-		if (!getEmbeddings().containsKey(term)) return null;
-		
+		if (!getEmbeddings().containsKey(term)) 
+		{
+			 if (!getEmbeddings().containsKey(term.toLowerCase())) {
+				 //System.err.println(term);
+				 return null;
+			 } else {
+				 term = term.toLowerCase();
+			 }
+		}
+
 		int vectorSize = getEmbeddings().get(term).length;
 		int[] indices = IntStream.range(0, vectorSize).toArray();
 		return new SparseVector(vectorSize, indices, getEmbeddings().get(term));
@@ -106,8 +116,11 @@ public class EmbeddingVectorReader
 				case txt:	loadTextModel();		break;
 				default: System.err.println("Undefinded Format of Embedding. "); break;
 			}
-			
-			System.out.printf("Size of embedding is %d. (only the loaded part is considered)%n", embeddings.size() );
+			for (String key : embeddings.keySet())
+			{
+				if (!key.equals(key.toLowerCase())) System.err.println(key);
+			}
+			System.out.printf("Remaining size of embedding %s after intersecting with set of all keys in evaluation set is %d.%n", embeddingsFile.getName(), embeddings.size());
 		}
 		
 		return embeddings;
@@ -192,6 +205,7 @@ public class EmbeddingVectorReader
 	        		partsOfLine = line.split(valueSeperatorSequence);
 	            
 	        		word = partsOfLine[0];
+	        		System.out.println(word);
 	        		
 //	            if (word.contains("/en/")) word = word.substring(4); //to remove in freebase en the language-marker TODO 
 	            
@@ -203,7 +217,7 @@ public class EmbeddingVectorReader
 	                vector[j] = Double.parseDouble(partsOfLine[j+1]);
 	            }
 	            
-	            	embeddings.put(word, vector);
+	            	embeddings.put(word.toLowerCase(), vector);
 	        }
 		}
 	}
@@ -232,7 +246,7 @@ public class EmbeddingVectorReader
 					for (int i = 1; i < partsOfLine.length; i++) {
 						vector[i-1] = Double.valueOf(partsOfLine[i]);
 					}
-					embeddings.put(word, vector);
+					embeddings.put(word.toLowerCase(), vector);
 				}
 				partsOfLine = null;
 			}
@@ -289,11 +303,12 @@ public class EmbeddingVectorReader
 	            		vector[j/4] = getFloat(floatBytes);
 	            }
 	            
-	            	embeddings.put(word, vector);
+	            	embeddings.put(word.toLowerCase(), vector);
 	        }
 		}
 	}	
 	
+	@SuppressWarnings("resource")
 	private BufferedReader getReader() 
 	{
 		String format = FilenameUtils.getExtension(embeddingsFile.getAbsolutePath());
@@ -304,16 +319,24 @@ public class EmbeddingVectorReader
 			try
 			{
 				ZipFile zf = new ZipFile(embeddingsFile);
-				ArrayList<ZipArchiveEntry> list = Collections.list(zf.getEntries());
-				if (list.size() >= 1) {
-					return new BufferedReader(new InputStreamReader(zf.getInputStream(list.get(0))));
+				ZipArchiveEntry zae;
+				if (!"".equals(nameOfSelectedFileInContainer))
+				{
+					zae = zf.getEntry(nameOfSelectedFileInContainer);
+					if (zae == null) throw new RuntimeException("Selected file from container file does not exist. (PARAM_CONTAINER_FILE)");
+					return new BufferedReader(new InputStreamReader(zf.getInputStream(zae)));
 				} else {
-					try {
-						zf.close();
-					} catch (Exception e) {
-						e.printStackTrace();
+					ArrayList<ZipArchiveEntry> list = Collections.list(zf.getEntries());
+					if (list.size() >= 1) {
+						return new BufferedReader(new InputStreamReader(zf.getInputStream(list.get(0))));
+					}else {
+						try {
+							zf.close();
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
 					}
-				}
+				} 
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -337,6 +360,7 @@ public class EmbeddingVectorReader
 		return null;
 	}
 	
+	@SuppressWarnings("resource")
 	private DataInputStream getInputStream()
 	{
 		String format = FilenameUtils.getExtension(embeddingsFile.getAbsolutePath());
@@ -346,16 +370,24 @@ public class EmbeddingVectorReader
 		{
 			try {
 				ZipFile zf = new ZipFile(embeddingsFile);
-				ArrayList<ZipArchiveEntry> list = Collections.list(zf.getEntries());
-				if (list.size() >= 1) {
-					return new DataInputStream(zf.getInputStream(list.get(0)));
+				ZipArchiveEntry zae;
+				if (!"".equals(nameOfSelectedFileInContainer))
+				{
+					zae = zf.getEntry(nameOfSelectedFileInContainer);
+					if (zae == null) throw new RuntimeException("Selected file from container file does not exist. (PARAM_CONTAINER_FILE)");
+					return new DataInputStream(zf.getInputStream(zae));
 				} else {
-					try {
-						zf.close();
-					} catch (Exception e) {
-						e.printStackTrace();
+					ArrayList<ZipArchiveEntry> list = Collections.list(zf.getEntries());
+					if (list.size() >= 1) {
+						return new DataInputStream(zf.getInputStream(list.get(0)));
+					}else {
+						try {
+							zf.close();
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
 					}
-				}
+				} 
 			}catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -441,7 +473,7 @@ public class EmbeddingVectorReader
     {
     		Set<String> setOfRelevantWords = new HashSet<String>();
     		if (this.ignoreRelevantWordsList) { 
-    			System.out.printf("Size of Set (relevantWords) is %d%n", setOfRelevantWords.size());
+    			System.out.printf("Number of words in filter set is %d because it shoult not be loaded. (var ignoreRelevantWordsList)%n", setOfRelevantWords.size());
     			return setOfRelevantWords;
     		}
 	    	try (BufferedReader br = new BufferedReader(new FileReader(filterFile))) {
@@ -450,7 +482,7 @@ public class EmbeddingVectorReader
 	    	       setOfRelevantWords.add(line.trim());
 	    	    }
 	    	}
-	    	System.out.printf("Number of words to be tested is %d (Size of Filter-Set)%n", setOfRelevantWords.size());
+	    	System.out.printf("Number of words in filter set is %d.%n", setOfRelevantWords.size());
     		return setOfRelevantWords;
     }
 

@@ -38,6 +38,10 @@ public final class EmbeddingVectorSourceRelatednessResource
 	    @ConfigurationParameter(name = PARAM_FILTER_LOCATION, mandatory = false)
 	    protected String filterLocation;
 	    
+	    public static final String PARAM_CONTAINER_FILE = "PARAM_CONTAINER_FILE";
+	    @ConfigurationParameter(name = PARAM_CONTAINER_FILE, mandatory = false, defaultValue="")
+	    protected String containerFile;
+	    
 	    
 
 	    @Override
@@ -56,7 +60,8 @@ public final class EmbeddingVectorSourceRelatednessResource
 	        										new File(modelLocation),
 	        										embeddingType,
 	        										embeddingFormat,
-	        										new File(filterLocation)
+	        										new File(filterLocation),
+	        										containerFile
 	        								),
 	        								cacheSize
 	        						)
