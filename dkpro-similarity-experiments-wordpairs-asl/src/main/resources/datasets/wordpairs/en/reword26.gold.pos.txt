@@ -1,0 +1,27 @@
+#Word1:Word2:Gold:POS1:POS2
+Android:Linux:0.615:NE:NE
+Bob Dylan:Beat Generation:0.307:NE:NE
+Amsterdam:Venice:0.894:NE:NE
+California:Computer Science:0.503:NE:NE
+China:Japan:0.709:NE:NE
+Computer Science:Music:0.193:NE:NE
+Turing:Computer Science:1.000:NE:NE
+Gandhi:Peace:0.559:NE:NE
+Google:IBM:0.782:NE:NE
+HTC:Nokia:0.972:NE:NE
+Italy:Pasta:0.726:NE:NE
+Maradona:Pele:0.849:NE:NE
+Maradona:Music:0.000:NE:NE
+Windows:Redmond:0.447:NE:NE
+New York:Paris:0.503:NE:NE
+Pink Floyd:Eclipse:0.279:NE:NE
+Radiohead:The Beatles:0.553:NE:NE
+Rock:Blues:0.391:NE:NE
+Bill Clinton:Obama:0.447:NE:NE
+Semantic Web:World Wide Web:0.642:NE:NE
+Stanley Kubrick:David Lynch:0.698:NE:NE
+The Big Bang Theory:California:0.363:NE:NE
+Turing:Biology:0.243:NE:NE
+Turkey:Europe:0.363:NE:NE
+United States:Europe:0.335:NE:NE
+Vienna:Danube:0.257:NE:NE

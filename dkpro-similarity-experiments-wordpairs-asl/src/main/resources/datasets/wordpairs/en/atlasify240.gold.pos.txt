@@ -1,0 +1,241 @@
+#Word1:Word2:Gold:POS1:POS2
+Isaac Newton:War:0.6:unk:unk
+Radio:Technology:3.7:unk:unk
+Australia:Hinduism:0.9:unk:unk
+Television:Truth:2.5:unk:unk
+Courage:Dove:1.4:unk:unk
+YouTube:Art:2.5:unk:unk
+Antarctica:Communism:0.2:unk:unk
+Radio:News:3.7:unk:unk
+Loyalty:Lion:1.9:unk:unk
+England:Chocolate:1.9:unk:unk
+Yellow:Bill Clinton:0.3:unk:unk
+Happiness:Sahara Desert:0.2:unk:unk
+Genghis Khan:Google:0.6:unk:unk
+South America:Hinduism:1.0:unk:unk
+Cat:Mouse:4.0:unk:unk
+Flickr:Community:3.2:unk:unk
+Envy:Yellow:1.1:unk:unk
+Beer:Led Zeppelin:1.4:unk:unk
+Europe:Hinduism:1.6:unk:unk
+Morning:Sunrise:4.0:unk:unk
+Autumn:Winter:4.0:unk:unk
+Lion:Mouse:3.1:unk:unk
+Australia:Bread:1.4:unk:unk
+Summer:Julius Caesar:1.0:unk:unk
+Somatosensory system:Australia:0.3:unk:unk
+Alan Turing:Biology:2.0:unk:unk
+Fear:Yellow:2.4:unk:unk
+England:Wine:2.1:unk:unk
+Switzerland:deviantArt:0.6:unk:unk
+Radio:Deception:1.6:unk:unk
+Leonhard Euler:Computer Science:2.5:unk:unk
+Italy:Beer:2.0:unk:unk
+France:Bread:3.8:unk:unk
+Ireland:Hinduism:0.5:unk:unk
+Antarctica:Buddhism:0.3:unk:unk
+4Chan:Art:1.3:unk:unk
+Architect:4Chan:0.2:unk:unk
+Cat:Loyalty:1.3:unk:unk
+deviantArt:Charles Darwin:0.1:unk:unk
+Queen (band):Country music:1.5:unk:unk
+Isaac Newton:Physics:4.0:unk:unk
+Soap:deviantArt:0.3:unk:unk
+Newspaper:Fear:2.0:unk:unk
+Morning:Humpback Whale:0.5:unk:unk
+Microsoft:Apple Inc.:3.9:unk:unk
+Religion:Democracy:2.5:unk:unk
+Astronaut:Flamingo:0.2:unk:unk
+Dove:Skype:0.1:unk:unk
+Beer:Computer Science:1.0:unk:unk
+Marie Curie:Mathematics:2.1:unk:unk
+Love:Dog:2.8:unk:unk
+Bald Eagle:Autumn:1.1:unk:unk
+Loyalty:Eagle:2.0:unk:unk
+Buddhism:Winter:0.9:unk:unk
+Switzerland:News:1.4:unk:unk
+France:Cheese:3.6:unk:unk
+South America:Islam:1.1:unk:unk
+Australia:Love:1.3:unk:unk
+Genghis Khan:Red:1.4:unk:unk
+North America:Buddhism:1.4:unk:unk
+Switzerland:Lobster:0.6:unk:unk
+Giant Panda:Banker:0.2:unk:unk
+Barack Obama:Blue:2.7:unk:unk
+Galileo Galilei:Biology:1.7:unk:unk
+Anger:Yellow:0.7:unk:unk
+George W. Bush:War:4.0:unk:unk
+Queen (band):Pop music:3.5:unk:unk
+Skype:Art:0.7:unk:unk
+Facebook:Cheese:0.0:unk:unk
+World of Warcraft:Community:3.6:unk:unk
+Isaac Newton:Computer Science:1.9:unk:unk
+England:Beer:3.0:unk:unk
+Antarctica:Christianity:0.6:unk:unk
+Hinduism:Spring (season):1.0:unk:unk
+Fear:Blue:0.7:unk:unk
+Alligator:Crocodile:4.0:unk:unk
+Galileo Galilei:Banker:0.5:unk:unk
+Love:Blue:1.6:unk:unk
+Australia:Chocolate:1.1:unk:unk
+Carnivore:Mammal:3.3:unk:unk
+Summer:Autumn:4.0:unk:unk
+France:Wine:3.9:unk:unk
+Rock music:Isaac Newton:0.0:unk:unk
+deviantArt:Privacy:1.5:unk:unk
+Marie Curie:Physics:3.2:unk:unk
+Loyalty:Dove:1.3:unk:unk
+Anger:Blue:0.9:unk:unk
+Cheese:France:3.7:unk:unk
+ABBA:Country music:1.4:unk:unk
+Albert Einstein:Chemistry:3.1:unk:unk
+AOL Instant Messenger:Community:3.2:unk:unk
+Happiness:Red:1.5:unk:unk
+Cat:Dog:4.0:unk:unk
+Bridge:River:3.9:unk:unk
+Peace:Dog:0.9:unk:unk
+Skype:Privacy:2.7:unk:unk
+Alaska:Rainforest:0.9:unk:unk
+Loyalty:Dog:4.0:unk:unk
+Russia:Buddhism:1.0:unk:unk
+Winter:Summer:3.9:unk:unk
+Isaac Newton:Mathematics:3.8:unk:unk
+Ronald Reagan:Islam:1.5:unk:unk
+Canada:Morning:0.4:unk:unk
+Alan Turing:Atilla the Hun:0.2:unk:unk
+World of Warcraft:Privacy:1.9:unk:unk
+Charles Darwin:Physics:1.8:unk:unk
+Sponge:Michael Jackson:0.2:unk:unk
+Italy:Bread:3.1:unk:unk
+Love:Dove:2.9:unk:unk
+Love:Lion:0.8:unk:unk
+YouTube:Community:3.2:unk:unk
+Twitter:Art:1.0:unk:unk
+Flamingo:Astronaut:0.3:unk:unk
+Wheat:Grain:4.0:unk:unk
+Love:Hawk:0.8:unk:unk
+deviantArt:Community:3.3:unk:unk
+Israel:War:3.9:unk:unk
+Barack Obama:Red:1.1:unk:unk
+War:Hawk:3.3:unk:unk
+Bear:Panda:4.0:unk:unk
+Hawk:Computer Science:0.2:unk:unk
+Marie Curie:Biology:1.7:unk:unk
+Fear:Bald Eagle:0.9:unk:unk
+Twitter:Summer:0.4:unk:unk
+Moss:Communism:0.0:unk:unk
+Lion:Hands:0.4:unk:unk
+Newspaper:Technology:2.9:unk:unk
+Radio:Bald Eagle:0.2:unk:unk
+Google:Facebook:3.8:unk:unk
+4Chan:ABBA:0.3:unk:unk
+Morality:Abortion:3.4:unk:unk
+Architect:Architecture:4.0:unk:unk
+Apple Inc.:Google:3.7:unk:unk
+Chemistry:Mathematics:3.4:unk:unk
+Television:Deception:2.4:unk:unk
+United States:Spoon:0.3:unk:unk
+Evil:Science:1.9:unk:unk
+Winter:Spring (season):4.0:unk:unk
+Happiness:Blue:2.1:unk:unk
+Barack Obama:Christianity:2.6:unk:unk
+Privacy:Chocolate:0.4:unk:unk
+Philosophy:Science:3.7:unk:unk
+Antarctica:Islam:0.2:unk:unk
+Flickr:Art:3.7:unk:unk
+Dog:Architect:0.2:unk:unk
+Winter:Autumn:4.0:unk:unk
+Literature:Facebook:1.5:unk:unk
+War:Harp Seal:0.4:unk:unk
+Mexico:Privacy:1.1:unk:unk
+Newspaper:Truth:3.1:unk:unk
+Charles Darwin:Biology:4.0:unk:unk
+Leonhard Euler:Biology:2.0:unk:unk
+Alan Turing:Computer Science:3.4:unk:unk
+Physics:Mathematics:4.0:unk:unk
+Carnivore:Carnivore:4.0:unk:unk
+Ireland:Wine:1.9:unk:unk
+The Beatles:Architect:0.2:unk:unk
+Middle East:Peace:3.8:unk:unk
+Computer Science:Beer:1.2:unk:unk
+Elvis Presley:Country music:2.7:unk:unk
+California Condor:Peru:1.1:unk:unk
+Bald Eagle:Physics:0.1:unk:unk
+Envy:Green:4.0:unk:unk
+The Beatles:Pop music:3.9:unk:unk
+Charles Darwin:Chemistry:2.0:unk:unk
+Napoleon:Judaism:1.2:unk:unk
+Asia:Islam:3.5:unk:unk
+Religion:United States Constitution:3.0:unk:unk
+MySpace:Community:3.9:unk:unk
+Happiness:Green:1.1:unk:unk
+Brazil:Beer:1.7:unk:unk
+Google:Internet:4.0:unk:unk
+Michael Jackson:Pop music:4.0:unk:unk
+Leonhard Euler:Television:0.7:unk:unk
+England:Cheese:2.5:unk:unk
+Microsoft:Facebook:2.9:unk:unk
+Albert Einstein:Computer Science:2.3:unk:unk
+Corn:Brick:0.3:unk:unk
+Grain:Wheat:4.0:unk:unk
+Africa:Islam:3.1:unk:unk
+United States:Chocolate:1.7:unk:unk
+Islam:Terrorism:3.5:unk:unk
+Buddhism:4Chan:0.5:unk:unk
+Green:Knife:0.2:unk:unk
+Art:Fear:1.3:unk:unk
+Australia:Cheese:1.7:unk:unk
+Architect:Democratic Republic of the Congo:0.3:unk:unk
+World of Warcraft:Art:1.6:unk:unk
+Gregor Mendel:Chemistry:2.6:unk:unk
+Peace:Dove:3.9:unk:unk
+Spring (season):Summer:4.0:unk:unk
+ABBA:Rock music:2.8:unk:unk
+Galileo Galilei:Physics:4.0:unk:unk
+Britney Spears:Indonesia:0.4:unk:unk
+Galileo Galilei:Computer Science:1.5:unk:unk
+Led Zeppelin:Pop music:2.8:unk:unk
+Happiness:Yellow:2.2:unk:unk
+Evil:Ethics:3.9:unk:unk
+Facebook:Google:3.6:unk:unk
+Albert Einstein:Taste:0.2:unk:unk
+War:Dove:2.8:unk:unk
+Lion:Sweden:1.4:unk:unk
+War:Eagle:2.7:unk:unk
+Yasser Arafat:Peace:3.3:unk:unk
+South America:Red:0.9:unk:unk
+Ireland:Beer:3.9:unk:unk
+Christopher Columbus:Australia:0.7:unk:unk
+Leonhard Euler:Mathematics:4.0:unk:unk
+deviantArt:Art:3.8:unk:unk
+France:Beer:1.7:unk:unk
+Loyalty:Hawk:1.2:unk:unk
+Wine:Flickr:0.3:unk:unk
+Dance:Beer:2.2:unk:unk
+ABBA:Politician:0.5:unk:unk
+United States:Wine:2.2:unk:unk
+Autumn:Spring (season):3.9:unk:unk
+Marie Curie:Computer Science:0.9:unk:unk
+Yasser Arafat:Jesse Jackson:0.7:unk:unk
+Bald Eagle:Brazil:1.1:unk:unk
+Bald Eagle:Art:1.1:unk:unk
+Yellow:Love:1.0:unk:unk
+Twitter:Community:3.7:unk:unk
+Barack Obama:Recession:3.6:unk:unk
+Skype:Community:3.3:unk:unk
+South America:Buddhism:0.8:unk:unk
+Sadness:Blue:4.0:unk:unk
+Courage:Eagle:3.1:unk:unk
+Internet:Truth:2.5:unk:unk
+Christianity:Democracy:2.1:unk:unk
+Charles Darwin:Mathematics:1.7:unk:unk
+California Condor:Islam:0.1:unk:unk
+Leonhard Euler:Physics:2.8:unk:unk
+Gregor Mendel:Winter:0.5:unk:unk
+Europe:Christianity:3.7:unk:unk
+North America:Islam:2.6:unk:unk
+Galileo Galilei:Kitchen:0.0:unk:unk
+War:Lion:2.9:unk:unk
+California Condor:Alexander the Great:0.2:unk:unk
+Germany:Cheese:2.1:unk:unk
+Apple Inc.:Microsoft:3.8:unk:unk
