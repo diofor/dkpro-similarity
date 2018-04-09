@@ -49,7 +49,7 @@ public class EmbeddingVectorReader
 	private Map<String, double[]> embeddings;
 	private final File embeddingsFile; 
 	private final File filterFile;
-	private String valueSeperatorSequence;
+	private String valueSeperatorSequence = " ";
 	private EmbeddingType embeddingType;
 	private EmbeddingFormat embeddingFormat;
 	private boolean ignoreRelevantWordsList;
@@ -63,8 +63,6 @@ public class EmbeddingVectorReader
 		this.filterFile = filterFile.exists() ?  filterFile : null;
 		ignoreRelevantWordsList = (this.filterFile == null); 
 		
-		valueSeperatorSequence = " "; //TODO
-		
 		embeddingFormat = formatOfEmbedding;
 		embeddingType = typeOfEmbedding;
 		this.nameOfSelectedFileInContainer = nameOfSelectedFileInContainer;
@@ -77,7 +75,6 @@ public class EmbeddingVectorReader
 		if (!getEmbeddings().containsKey(term)) 
 		{
 			 if (!getEmbeddings().containsKey(term.toLowerCase())) {
-				 //System.err.println(term);
 				 return null;
 			 } else {
 				 term = term.toLowerCase();
@@ -106,6 +103,13 @@ public class EmbeddingVectorReader
 		}
 	}
 	
+	
+	/**
+	 * Either triggers loading of embedding or just returns it as a map.
+	 * 
+	 * @return Map<String, double[]>
+	 * @throws SimilarityException
+	 */
 	private Map<String, double[]> getEmbeddings() throws SimilarityException
 	{
 		if (embeddings == null)
@@ -116,13 +120,8 @@ public class EmbeddingVectorReader
 				case txt:	loadTextModel();		break;
 				default: System.err.println("Undefinded Format of Embedding. "); break;
 			}
-			for (String key : embeddings.keySet())
-			{
-				if (!key.equals(key.toLowerCase())) System.err.println(key);
-			}
 			System.out.printf("Remaining size of embedding %s after intersecting with set of all keys in evaluation set is %d.%n", embeddingsFile.getName(), embeddings.size());
 		}
-		
 		return embeddings;
 	}
 	
@@ -180,18 +179,19 @@ public class EmbeddingVectorReader
 	}
 	
 	
-	/*
+	/**
+	 * Loads a text based embedding with headline.
+	 * Filtering using a set is possible.
 	 * Normally this matches Word2Vec and FastText
+	 * 
 	 */
-	//
 	private void loadTextModelWithHeadline() throws IOException
 	{
 		try (BufferedReader reader = getReader())
 		{
 			//read information about #Vectors and #VectorDimensions
 	        String[] firstLine = reader.readLine().split(valueSeperatorSequence);
-	        int words, vecSize;
-	        words = Integer.parseInt(firstLine[0]);
+	        int vecSize;
 	        vecSize = Integer.parseInt(firstLine[1]);
 	        
 	        String[] partsOfLine;
@@ -203,27 +203,21 @@ public class EmbeddingVectorReader
 	        while((line = reader.readLine()) != null)
 	        {
 	        		partsOfLine = line.split(valueSeperatorSequence);
-	            
 	        		word = partsOfLine[0];
-	        		System.out.println(word);
-	        		
-//	            if (word.contains("/en/")) word = word.substring(4); //to remove in freebase en the language-marker TODO 
-	            
 	            if (!ignoreRelevantWordsList && !relevantWords.contains(word)) continue; //abort String to Vector transformation if not on the relevantWordsList
-	            
 	            vector = new double[vecSize];
-	
 	            for (int j = 0; j < vecSize; j++) {
 	                vector[j] = Double.parseDouble(partsOfLine[j+1]);
 	            }
-	            
 	            	embeddings.put(word.toLowerCase(), vector);
 	        }
 		}
 	}
 	
 	
-	/*
+	/**
+	 * Loads a text based embedding without headline.
+	 * Filtering using a set is possible.
 	 * Normally this is Glove
 	 */
 	private void loadTextModelWithoutHeadline() throws IOException
@@ -254,14 +248,13 @@ public class EmbeddingVectorReader
 	}
 	
 	
-	/*
-	 * Normally only Word2Vec but also able to read FastText
-	 * 
-	 * Reads byte by byte	
+	/**
+	 * Loads a binary based embedding with headline.
+	 * Filtering using a set is possible.
+	 * Normally only Word2Vec but also able to read FastText	
 	 */
 	private void loadBinModelWithHeadline() throws IOException
 	{
-		boolean linebreaks = false; //TODO
 		int words, vecSize;
 		Set<String> relevantWords = loadSetOfRelevantWords();
 		try (DataInputStream dis = getInputStream())
@@ -271,26 +264,14 @@ public class EmbeddingVectorReader
 	        double[] vector;
 	        String word;
 	        
-	        System.out.println("Reading Embedding...");
-	        short nextStep = 5;
 	        for (long i = 0; i < words; i++) {
-	        		if (((i*100)/words) >= nextStep)
-	        		{
-	        			System.out.print(nextStep  + "% | ");
-	        			nextStep += 5;
-	        		}
-	        		
 	        		vector = new double[vecSize];
 	        		word = readString(dis);
 	            	            
-	//            if (word.contains("/en/")) word = word.substring(4); //to remove in freebase en the language-marker TODO 
 	            int bytesToRead = 4*vecSize;
 	            byte[] bytes = new byte[bytesToRead];
 	            dis.read(bytes);
 	            
-	            if (linebreaks) {
-	                dis.readByte(); // line break
-	            }
 	            
 	            if (!ignoreRelevantWordsList && !relevantWords.contains(word)) continue;  //abort String to Vector transformation if not on the relevantWordsList
 	            
@@ -308,6 +289,12 @@ public class EmbeddingVectorReader
 		}
 	}	
 	
+	
+	/**
+	 * Generate reader for text based embeddings.
+	 * 
+	 * @return BufferedReader
+	 */
 	@SuppressWarnings("resource")
 	private BufferedReader getReader() 
 	{
@@ -360,6 +347,12 @@ public class EmbeddingVectorReader
 		return null;
 	}
 	
+	
+	/**
+	 * Generate reader for binary based embeddings.
+	 * 
+	 * @return DataInputStream
+	 */
 	@SuppressWarnings("resource")
 	private DataInputStream getInputStream()
 	{
