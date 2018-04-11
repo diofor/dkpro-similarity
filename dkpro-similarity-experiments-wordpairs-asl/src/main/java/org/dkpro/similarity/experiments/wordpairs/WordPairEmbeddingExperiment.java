@@ -11,8 +11,8 @@ import org.apache.uima.UIMAException;
 import org.apache.uima.analysis_engine.AnalysisEngineDescription;
 import org.apache.uima.collection.CollectionReader;
 import org.apache.uima.fit.pipeline.SimplePipeline;
+import org.dkpro.similarity.algorithms.vsm.store.EmbeddingVectorReader.EmbeddingEncoding;
 import org.dkpro.similarity.algorithms.vsm.store.EmbeddingVectorReader.EmbeddingFormat;
-import org.dkpro.similarity.algorithms.vsm.store.EmbeddingVectorReader.EmbeddingType;
 import org.dkpro.similarity.algorithms.vsm.uima.EmbeddingVectorSourceRelatednessResource;
 import org.dkpro.similarity.experiments.wordpairs.io.SemanticRelatednessResultWriter;
 import org.dkpro.similarity.experiments.wordpairs.io.WordPairReader;
@@ -73,8 +73,8 @@ public class WordPairEmbeddingExperiment {
 				ResourceBasedAnnotator.SR_RESOURCE,	createExternalResourceDescription(
 						EmbeddingVectorSourceRelatednessResource.class, 
 						EmbeddingVectorSourceRelatednessResource.PARAM_MODEL_LOCATION,  "GoogleNews-vectors-negative300.bin.gz",
-						EmbeddingVectorSourceRelatednessResource.PARAM_EMBEDDING_TYPE, EmbeddingType.Word2Vec.toString(),	
-						EmbeddingVectorSourceRelatednessResource.PARAM_EMBEDDING_FORMAT, EmbeddingFormat.bin.toString(),
+						EmbeddingVectorSourceRelatednessResource.PARAM_EMBEDDING_FORMAT, EmbeddingFormat.Word2Vec.toString(),	
+						EmbeddingVectorSourceRelatednessResource.PARAM_EMBEDDING_ENCODING, EmbeddingEncoding.bin.toString(),
 						EmbeddingVectorSourceRelatednessResource.PARAM_FILTER_LOCATION, filterFilePath
 				)
 		);
@@ -88,10 +88,10 @@ public class WordPairEmbeddingExperiment {
 				ResourceBasedAnnotator.class,
 				ResourceBasedAnnotator.SR_RESOURCE,	createExternalResourceDescription(
 						EmbeddingVectorSourceRelatednessResource.class, 
-						EmbeddingVectorSourceRelatednessResource.PARAM_FILTER_LOCATION, filterFilePath,
 						EmbeddingVectorSourceRelatednessResource.PARAM_MODEL_LOCATION,  "deps.words.bz2",
-						EmbeddingVectorSourceRelatednessResource.PARAM_EMBEDDING_TYPE, EmbeddingType.GLOVE.toString(),	
-						EmbeddingVectorSourceRelatednessResource.PARAM_EMBEDDING_FORMAT, EmbeddingFormat.txt.toString()
+						EmbeddingVectorSourceRelatednessResource.PARAM_EMBEDDING_FORMAT, EmbeddingFormat.GLOVE.toString(),	
+						EmbeddingVectorSourceRelatednessResource.PARAM_EMBEDDING_ENCODING, EmbeddingEncoding.txt.toString(),
+						EmbeddingVectorSourceRelatednessResource.PARAM_FILTER_LOCATION, filterFilePath
 				)
 		);
 		
@@ -105,10 +105,10 @@ public class WordPairEmbeddingExperiment {
 				ResourceBasedAnnotator.class,
 				ResourceBasedAnnotator.SR_RESOURCE,	createExternalResourceDescription(
 						EmbeddingVectorSourceRelatednessResource.class, 
-						EmbeddingVectorSourceRelatednessResource.PARAM_FILTER_LOCATION, filterFilePath,
 						EmbeddingVectorSourceRelatednessResource.PARAM_MODEL_LOCATION, "glove.6B.zip",
-						EmbeddingVectorSourceRelatednessResource.PARAM_EMBEDDING_TYPE, EmbeddingType.GLOVE.toString(),
-						EmbeddingVectorSourceRelatednessResource.PARAM_EMBEDDING_FORMAT, EmbeddingFormat.txt.toString(),
+						EmbeddingVectorSourceRelatednessResource.PARAM_EMBEDDING_FORMAT, EmbeddingFormat.GLOVE.toString(),
+						EmbeddingVectorSourceRelatednessResource.PARAM_EMBEDDING_ENCODING, EmbeddingEncoding.txt.toString(),
+						EmbeddingVectorSourceRelatednessResource.PARAM_FILTER_LOCATION, filterFilePath,
 						EmbeddingVectorSourceRelatednessResource.PARAM_CONTAINER_FILE, "glove.6B.50d.txt"
 //						EmbeddingVectorSourceRelatednessResource.PARAM_CONTAINER_FILE, "glove.6B.100d.txt"
 //						EmbeddingVectorSourceRelatednessResource.PARAM_CONTAINER_FILE, "glove.6B.200d.txt"
@@ -126,8 +126,8 @@ public class WordPairEmbeddingExperiment {
 				ResourceBasedAnnotator.SR_RESOURCE,	createExternalResourceDescription(
 						EmbeddingVectorSourceRelatednessResource.class,
 						EmbeddingVectorSourceRelatednessResource.PARAM_MODEL_LOCATION, "glove.840B.300d.zip",  
-						EmbeddingVectorSourceRelatednessResource.PARAM_EMBEDDING_TYPE, EmbeddingType.GLOVE.toString(),
-						EmbeddingVectorSourceRelatednessResource.PARAM_EMBEDDING_FORMAT, EmbeddingFormat.txt.toString(),
+						EmbeddingVectorSourceRelatednessResource.PARAM_EMBEDDING_FORMAT, EmbeddingFormat.GLOVE.toString(),
+						EmbeddingVectorSourceRelatednessResource.PARAM_EMBEDDING_ENCODING, EmbeddingEncoding.txt.toString(),
 						EmbeddingVectorSourceRelatednessResource.PARAM_FILTER_LOCATION, filterFilePath
 				)
 		);
@@ -141,8 +141,8 @@ public class WordPairEmbeddingExperiment {
 				ResourceBasedAnnotator.SR_RESOURCE,	createExternalResourceDescription(
 						EmbeddingVectorSourceRelatednessResource.class,
 						EmbeddingVectorSourceRelatednessResource.PARAM_MODEL_LOCATION, "glove.42B.300d.zip",  
-						EmbeddingVectorSourceRelatednessResource.PARAM_EMBEDDING_TYPE, EmbeddingType.GLOVE.toString(),
-						EmbeddingVectorSourceRelatednessResource.PARAM_EMBEDDING_FORMAT, EmbeddingFormat.txt.toString(),
+						EmbeddingVectorSourceRelatednessResource.PARAM_EMBEDDING_FORMAT, EmbeddingFormat.GLOVE.toString(),
+						EmbeddingVectorSourceRelatednessResource.PARAM_EMBEDDING_ENCODING, EmbeddingEncoding.txt.toString(),
 						EmbeddingVectorSourceRelatednessResource.PARAM_FILTER_LOCATION, filterFilePath
 				)
 		);
@@ -157,8 +157,9 @@ public class WordPairEmbeddingExperiment {
 						EmbeddingVectorSourceRelatednessResource.class, 
 						EmbeddingVectorSourceRelatednessResource.PARAM_FILTER_LOCATION, filterFilePath,
 						EmbeddingVectorSourceRelatednessResource.PARAM_MODEL_LOCATION, "glove.twitter.27B.zip",
-						EmbeddingVectorSourceRelatednessResource.PARAM_EMBEDDING_TYPE, EmbeddingType.GLOVE.toString(),
-						EmbeddingVectorSourceRelatednessResource.PARAM_EMBEDDING_FORMAT, EmbeddingFormat.txt.toString(),
+						EmbeddingVectorSourceRelatednessResource.PARAM_EMBEDDING_FORMAT, EmbeddingFormat.GLOVE.toString(),
+						EmbeddingVectorSourceRelatednessResource.PARAM_EMBEDDING_ENCODING, EmbeddingEncoding.txt.toString(),
+						EmbeddingVectorSourceRelatednessResource.PARAM_FILTER_LOCATION, filterFilePath,
 						EmbeddingVectorSourceRelatednessResource.PARAM_CONTAINER_FILE, "glove.twitter.27B.25d.txt"
 //						EmbeddingVectorSourceRelatednessResource.PARAM_CONTAINER_FILE, "glove.twitter.27B.50d.txt"
 //						EmbeddingVectorSourceRelatednessResource.PARAM_CONTAINER_FILE, "glove.twitter.27B.100d.txt"
@@ -176,10 +177,10 @@ public class WordPairEmbeddingExperiment {
 				ResourceBasedAnnotator.class,
 				ResourceBasedAnnotator.SR_RESOURCE,	createExternalResourceDescription(
 						EmbeddingVectorSourceRelatednessResource.class, 
-						EmbeddingVectorSourceRelatednessResource.PARAM_FILTER_LOCATION, filterFilePath,
 						EmbeddingVectorSourceRelatednessResource.PARAM_MODEL_LOCATION, "crawl-300d-2M.vec.zip",
-						EmbeddingVectorSourceRelatednessResource.PARAM_EMBEDDING_TYPE, EmbeddingType.FastText.toString(),
-						EmbeddingVectorSourceRelatednessResource.PARAM_EMBEDDING_FORMAT, EmbeddingFormat.txt.toString()
+						EmbeddingVectorSourceRelatednessResource.PARAM_EMBEDDING_FORMAT, EmbeddingFormat.FastText.toString(),
+						EmbeddingVectorSourceRelatednessResource.PARAM_EMBEDDING_ENCODING, EmbeddingEncoding.txt.toString(),
+						EmbeddingVectorSourceRelatednessResource.PARAM_FILTER_LOCATION, filterFilePath
 				)
 		);
 		
@@ -191,10 +192,10 @@ public class WordPairEmbeddingExperiment {
 				ResourceBasedAnnotator.class,
 				ResourceBasedAnnotator.SR_RESOURCE,	createExternalResourceDescription(
 						EmbeddingVectorSourceRelatednessResource.class, 
-						EmbeddingVectorSourceRelatednessResource.PARAM_FILTER_LOCATION, filterFilePath,
 						EmbeddingVectorSourceRelatednessResource.PARAM_MODEL_LOCATION, "wiki-news-300d-1M.vec.zip",
-						EmbeddingVectorSourceRelatednessResource.PARAM_EMBEDDING_TYPE, EmbeddingType.FastText.toString(),
-						EmbeddingVectorSourceRelatednessResource.PARAM_EMBEDDING_FORMAT, EmbeddingFormat.txt.toString()
+						EmbeddingVectorSourceRelatednessResource.PARAM_EMBEDDING_FORMAT, EmbeddingFormat.FastText.toString(),
+						EmbeddingVectorSourceRelatednessResource.PARAM_EMBEDDING_ENCODING, EmbeddingEncoding.txt.toString(),
+						EmbeddingVectorSourceRelatednessResource.PARAM_FILTER_LOCATION, filterFilePath
 				)
 		);
 		

@@ -9,8 +9,8 @@ import org.apache.uima.resource.ResourceSpecifier;
 import org.dkpro.similarity.algorithms.vsm.VectorComparator;
 import org.dkpro.similarity.algorithms.vsm.store.CachingVectorReader;
 import org.dkpro.similarity.algorithms.vsm.store.EmbeddingVectorReader;
+import org.dkpro.similarity.algorithms.vsm.store.EmbeddingVectorReader.EmbeddingEncoding;
 import org.dkpro.similarity.algorithms.vsm.store.EmbeddingVectorReader.EmbeddingFormat;
-import org.dkpro.similarity.algorithms.vsm.store.EmbeddingVectorReader.EmbeddingType;
 import org.dkpro.similarity.uima.resource.TextSimilarityResourceBase;
 
 import de.tudarmstadt.ukp.dkpro.core.api.parameter.ComponentParameters;
@@ -26,13 +26,13 @@ public final class EmbeddingVectorSourceRelatednessResource
 	    @ConfigurationParameter(name = PARAM_CACHE_SIZE, mandatory = true, defaultValue="100")
 	    protected int cacheSize;
 	    
-	    public static final String PARAM_EMBEDDING_TYPE = "PARAM_EMBEDDING_TYPE";
-	    @ConfigurationParameter(name = PARAM_EMBEDDING_TYPE, mandatory = true, defaultValue="GLOVE")
-	    protected EmbeddingType embeddingType;
-	    
 	    public static final String PARAM_EMBEDDING_FORMAT = "PARAM_EMBEDDING_FORMAT";
-	    @ConfigurationParameter(name = PARAM_EMBEDDING_FORMAT, mandatory = true, defaultValue="txt")
+	    @ConfigurationParameter(name = PARAM_EMBEDDING_FORMAT, mandatory = true, defaultValue="GLOVE")
 	    protected EmbeddingFormat embeddingFormat;
+	    
+	    public static final String PARAM_EMBEDDING_ENCODING = "PARAM_EMBEDDING_ENCODING";
+	    @ConfigurationParameter(name = PARAM_EMBEDDING_ENCODING, mandatory = true, defaultValue="txt")
+	    protected EmbeddingEncoding embeddingEncoding;
 	    
 	    public static final String PARAM_FILTER_LOCATION = "PARAM_FILTER_LOCATION";
 	    @ConfigurationParameter(name = PARAM_FILTER_LOCATION, mandatory = false)
@@ -41,6 +41,10 @@ public final class EmbeddingVectorSourceRelatednessResource
 	    public static final String PARAM_CONTAINER_FILE = "PARAM_CONTAINER_FILE";
 	    @ConfigurationParameter(name = PARAM_CONTAINER_FILE, mandatory = false, defaultValue="")
 	    protected String containerFile;
+	    
+	    public static final String PARAM_SEPERATOR_SEQUENCE = "PARAM_SEPERATOR_SEQUENCE";
+	    @ConfigurationParameter(name = PARAM_SEPERATOR_SEQUENCE , mandatory = false, defaultValue=" ")
+	    protected String seperatorSequence;
 	    
 	    
 
@@ -58,10 +62,11 @@ public final class EmbeddingVectorSourceRelatednessResource
 	        						new CachingVectorReader(
 	        								new EmbeddingVectorReader( 
 	        										new File(modelLocation),
-	        										embeddingType,
 	        										embeddingFormat,
+	        										embeddingEncoding,
 	        										new File(filterLocation),
-	        										containerFile
+	        										containerFile,
+	        										seperatorSequence
 	        								),
 	        								cacheSize
 	        						)

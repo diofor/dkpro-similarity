@@ -37,11 +37,11 @@ public class EmbeddingVectorReader
 	extends VectorReader 
 	implements VectorIndexContract 
 {
-	public enum EmbeddingType{
+	public enum EmbeddingFormat{
 		GLOVE, Word2Vec, FastText
 	}
 	
-	public enum EmbeddingFormat{
+	public enum EmbeddingEncoding{
 		bin, txt
 	}
 
@@ -49,22 +49,23 @@ public class EmbeddingVectorReader
 	private Map<String, double[]> embeddings;
 	private final File embeddingsFile; 
 	private final File filterFile;
-	private String valueSeperatorSequence = " ";
-	private EmbeddingType embeddingType;
+	private String valueSeperatorSequence;
 	private EmbeddingFormat embeddingFormat;
+	private EmbeddingEncoding embeddingEncoding;
 	private boolean ignoreRelevantWordsList;
 	private String nameOfSelectedFileInContainer;
 	
 	
 	
-	public EmbeddingVectorReader(File embeddingFile, EmbeddingType typeOfEmbedding, EmbeddingFormat formatOfEmbedding, File filterFile, String nameOfSelectedFileInContainer) {
+	public EmbeddingVectorReader(File embeddingFile, EmbeddingFormat formatOfEmbedding, EmbeddingEncoding encodingOfEmbedding, File filterFile, String nameOfSelectedFileInContainer, String valueSeperator) {
 		this.embeddingsFile = embeddingFile;
 		
 		this.filterFile = filterFile.exists() ?  filterFile : null;
 		ignoreRelevantWordsList = (this.filterFile == null); 
+		valueSeperatorSequence = valueSeperator;
 		
+		embeddingEncoding = encodingOfEmbedding;
 		embeddingFormat = formatOfEmbedding;
-		embeddingType = typeOfEmbedding;
 		this.nameOfSelectedFileInContainer = nameOfSelectedFileInContainer;
 	}
 	
@@ -115,10 +116,10 @@ public class EmbeddingVectorReader
 		if (embeddings == null)
 		{
 			embeddings = new HashMap<String, double[]>();
-			switch (embeddingFormat) {
+			switch (embeddingEncoding) {
 				case bin:	loadBinModel();		break;
 				case txt:	loadTextModel();		break;
-				default: System.err.println("Undefinded Format of Embedding. "); break;
+				default: System.err.println("Undefinded Encoding of Embedding. "); break;
 			}
 			System.out.printf("Remaining size of embedding %s after intersecting with set of all keys in evaluation set is %d.%n", embeddingsFile.getName(), embeddings.size());
 		}
@@ -127,7 +128,7 @@ public class EmbeddingVectorReader
 	
 	private void loadTextModel()
 	{
-		switch (embeddingType) {
+		switch (embeddingFormat) {
 		case GLOVE:
 			try {
 				loadTextModelWithoutHeadline();
@@ -144,7 +145,7 @@ public class EmbeddingVectorReader
 			}
 			break;
 		default:
-			System.err.println("Should not be reached. No embeddingType defined in EmbeddingVectorReader");
+			System.err.println("Should not be reached. No embeddingFormat defined in EmbeddingVectorReader");
 			break;
 		}
 	}
@@ -156,7 +157,7 @@ public class EmbeddingVectorReader
 				new BufferedInputStream(new FileInputStream(embeddingsFile)));
 				DataInputStream din = new DataInputStream(in))
 		{
-			switch (embeddingType) {
+			switch (embeddingFormat) {
 			case GLOVE:
 				System.err.println("No Model known with binary glove format. Not defined in EmbeddingVectorReader");
 				break;
@@ -165,7 +166,7 @@ public class EmbeddingVectorReader
 				loadBinModelWithHeadline();
 				break;
 			default:
-				System.err.println("Should not be reached. No embeddingType defined in EmbeddingVectorReader");
+				System.err.println("Should not be reached. No embeddingFormat defined in EmbeddingVectorReader");
 				break;
 			}
 			
